@@ -4,7 +4,6 @@ import javax.management.RuntimeErrorException;
 import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3f;
-import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4f;
 
 import com.jogamp.opengl.GL4;
@@ -12,8 +11,6 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
-
-import java.util.*;
 
 import mintools.viewer.FontTexture;
 
@@ -41,13 +38,10 @@ public class BasicPipeline {
     public int positionAttributeID;
     public int normalAttributeID;
     
-    /** TODO: Objective 1: add a matrix stack to the basic pipeline */
-    public Stack s;
+    /** TODO: Objective 1: add a matrix stack to the basic pipeline */    
    
 	/** TODO: Objective 1: Modeling matrix, make sure this is always the matrix at the top of the stack */
     private Matrix4d MMatrix = new Matrix4d();
-
-    
     /** Inverse Transpose of Modeling matrix */
     private Matrix4d MinvTMatrix = new Matrix4d();
     /** View matrix */
@@ -59,8 +53,6 @@ public class BasicPipeline {
     
 	public BasicPipeline( GLAutoDrawable drawable ) {
 		// TODO: Objective 1: initialize your stack(s)?
-		s = new Stack();
-		s.push(MMatrix);
 		initMatricies();
 		
 		fontTexture = new FontTexture();
@@ -105,9 +97,6 @@ public class BasicPipeline {
 	/** Sets the modeling matrix with the current top of the stack */
 	public void setModelingMatrixUniform( GL4 gl ) {
 		// TODO: Objective 1: make sure you send the top of the stack modeling and inverse transpose matrices to GLSL
-		MMatrix.set((Matrix4d)s.peek());
-		MinvTMatrix.invert(MMatrix);
-		MinvTMatrix.transpose();
 		glUniformMatrix( gl, MMatrixID, MMatrix );
 		glUniformMatrix( gl, MinvTMatrixID, MinvTMatrix);
 	}
@@ -118,7 +107,6 @@ public class BasicPipeline {
 	 */
 	public void push() {
 		// TODO: Objective 1: stack push
-		s.push(MMatrix);
 		throw new RuntimeErrorException( new Error("stack overflow") );
 	}
 
@@ -129,14 +117,7 @@ public class BasicPipeline {
 	 */
 	public void pop() {
 		// TODO: Objective 1: stack pop
-		MMatrix.set((Matrix4d)s.peek());
-		
-		
-		if(!s.empty()) {
-			s.pop();
-		}
 		throw new RuntimeErrorException( new Error("stack underflow") );
-		
 	}
 	
 	private Matrix4d tmpMatrix4d = new Matrix4d();
@@ -164,7 +145,6 @@ public class BasicPipeline {
         		-x,  -y,  -z,  1,
         } );
 		MinvTMatrix.mul(tmpMatrix4d);
-		
 	}
 
 	/**
@@ -190,7 +170,7 @@ public class BasicPipeline {
         		0,  0,  0,  1,
         } );
 		MinvTMatrix.mul(tmpMatrix4d);
-		
+
 	}
 	
 	/**
