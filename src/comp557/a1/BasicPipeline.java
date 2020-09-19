@@ -13,6 +13,7 @@ import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
 
 import mintools.viewer.FontTexture;
+import java.util.*;
 
 /**
  * Basic GLSL transformation and lighting pipeline, along with a matrix stack
@@ -38,7 +39,8 @@ public class BasicPipeline {
     public int positionAttributeID;
     public int normalAttributeID;
     
-    /** TODO: Objective 1: add a matrix stack to the basic pipeline */    
+    /** TODO: Objective 1: add a matrix stack to the basic pipeline */
+    Stack s;
    
 	/** TODO: Objective 1: Modeling matrix, make sure this is always the matrix at the top of the stack */
     private Matrix4d MMatrix = new Matrix4d();
@@ -53,8 +55,10 @@ public class BasicPipeline {
     
 	public BasicPipeline( GLAutoDrawable drawable ) {
 		// TODO: Objective 1: initialize your stack(s)?
-		initMatricies();
+		s= new Stack();
 		
+		initMatricies();
+		s.push(MMatrix);
 		fontTexture = new FontTexture();
 		fontTexture.init(drawable);
 		
@@ -97,6 +101,9 @@ public class BasicPipeline {
 	/** Sets the modeling matrix with the current top of the stack */
 	public void setModelingMatrixUniform( GL4 gl ) {
 		// TODO: Objective 1: make sure you send the top of the stack modeling and inverse transpose matrices to GLSL
+		MMatrix.set((Matrix4d)s.peek());
+		MinvTMatrix.invert(MMatrix);
+		MinvTMatrix.transpose();
 		glUniformMatrix( gl, MMatrixID, MMatrix );
 		glUniformMatrix( gl, MinvTMatrixID, MinvTMatrix);
 	}
@@ -107,6 +114,9 @@ public class BasicPipeline {
 	 */
 	public void push() {
 		// TODO: Objective 1: stack push
+		Matrix4d temp = new Matrix4d();
+		temp.set(MMatrix);
+		s.push(temp);
 		throw new RuntimeErrorException( new Error("stack overflow") );
 	}
 
@@ -117,6 +127,11 @@ public class BasicPipeline {
 	 */
 	public void pop() {
 		// TODO: Objective 1: stack pop
+		MMatrix.set((Matrix4d)s.peek());
+		if(!s.empty()) {
+			s.pop();
+		}
+		
 		throw new RuntimeErrorException( new Error("stack underflow") );
 	}
 	
