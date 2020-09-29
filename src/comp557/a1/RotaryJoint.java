@@ -1,37 +1,49 @@
 package comp557.a1;
 
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
+
+import javax.vecmath.Tuple3d;
 import javax.vecmath.Vector3d;
 
 import mintools.parameters.DoubleParameter;
 
 public class RotaryJoint extends GraphNode  {
 	DoubleParameter r;
-	DoubleParameter tx;
-	DoubleParameter ty;
-	DoubleParameter tz;
-	Vector3d axis;
+
+	Tuple3d axis;
+	Tuple3d trans;
 	
-	public RotaryJoint(String name, double min, double max, Vector3d axis, Vector3d translation) {
+	public RotaryJoint(String name, double min, double max, Tuple3d axis, Tuple3d translation) {
 		super(name);
-		dofs.add(r = new DoubleParameter(name + " r",0, min, max));
-		dofs.add( tx = new DoubleParameter( name+" tx", 0, -2, 2 ) );		
-		dofs.add( ty = new DoubleParameter( name+" ty", 0, -2, 2 ) );
-		dofs.add( tz = new DoubleParameter( name+" tz", 0, -2, 2 ) );
-		this.axis.set(axis);
-		this.tx.setValue(translation.x);
-		this.ty.setValue(translation.y);
-		this.tz.setValue(translation.z);
-		
-		
+		dofs.add(r = new DoubleParameter(name + "rotation",0.1, min, max));
+		this.axis = axis;
+		this.trans = translation;
+
+	}
+	public RotaryJoint(String name) {
+		super(name);
+		dofs.add(r = new DoubleParameter(name + "rotation",0, -180, 180));
+
 	}
 	
+	public void setAxis(Tuple3d axis) {
+		this.axis = axis;
+	}
+	
+	public void setPosition(Tuple3d translation) {
+		this.trans = translation;
+	}
 	@Override
 	public void display( GLAutoDrawable drawable, BasicPipeline pipeline ) {
 		pipeline.push();
 		
-		pipeline.translate(tx.getValue(), ty.getValue(), tz.getValue());
+		pipeline.translate(trans.x,trans.y, trans.z);
 		pipeline.rotate(r.getValue()*Math.PI/180,axis.x,axis.y,axis.z);
+
+		GL4 gl = drawable.getGL().getGL4();
+		pipeline.setModelingMatrixUniform(gl);
+		
 
 
 		super.display( drawable, pipeline );		

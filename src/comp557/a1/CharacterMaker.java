@@ -1,6 +1,7 @@
 package comp557.a1;
 
 import javax.swing.JTextField;
+import javax.vecmath.Vector3d;
 
 import mintools.parameters.BooleanParameter;
 
@@ -30,7 +31,15 @@ public class CharacterMaker {
 			// Here we just return null, which will not be very interesting, so write
 			// some code to create a test or partial character and return the root node.
 
-			return new FreeJoint("test");
+			FreeJoint parent = new FreeJoint("test");
+			Vector3d axis = new Vector3d(0,0,1);
+			Vector3d trans = new Vector3d(0.2,0.2,0);
+//			FreeJoint child = new FreeJoint("tooo");
+//			parent.add(child);
+			parent.add(new RotaryJoint("r331",-180,180,axis,trans)); 
+//			RotaryJoint testrotary = new RotaryJoint("r1",-180,180,axis,trans);
+			return parent;
+//			return new FreeJoint("test");
 		}
 	}
 }

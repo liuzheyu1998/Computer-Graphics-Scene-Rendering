@@ -4,6 +4,7 @@ import javax.management.RuntimeErrorException;
 import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3f;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4f;
 
 import com.jogamp.opengl.GL4;
@@ -14,6 +15,7 @@ import com.jogamp.opengl.util.glsl.ShaderProgram;
 
 import mintools.viewer.FontTexture;
 import java.util.*;
+import javafx.util.Pair;
 
 /**
  * Basic GLSL transformation and lighting pipeline, along with a matrix stack
@@ -40,7 +42,7 @@ public class BasicPipeline {
     public int normalAttributeID;
     
     /** TODO: Objective 1: add a matrix stack to the basic pipeline */
-    Stack s;
+    Stack<Pair<Matrix4d, Matrix4d>> s = new Stack<>();
    
 	/** TODO: Objective 1: Modeling matrix, make sure this is always the matrix at the top of the stack */
     private Matrix4d MMatrix = new Matrix4d();
@@ -55,10 +57,10 @@ public class BasicPipeline {
     
 	public BasicPipeline( GLAutoDrawable drawable ) {
 		// TODO: Objective 1: initialize your stack(s)?
-		s= new Stack();
+
 		
 		initMatricies();
-		s.push(MMatrix);
+		s.push(new Pair<Matrix4d, Matrix4d>(MMatrix,MinvTMatrix));
 		fontTexture = new FontTexture();
 		fontTexture.init(drawable);
 		
@@ -101,9 +103,10 @@ public class BasicPipeline {
 	/** Sets the modeling matrix with the current top of the stack */
 	public void setModelingMatrixUniform( GL4 gl ) {
 		// TODO: Objective 1: make sure you send the top of the stack modeling and inverse transpose matrices to GLSL
-		MMatrix.set((Matrix4d)s.peek());
-		MinvTMatrix.invert(MMatrix);
-		MinvTMatrix.transpose();
+//		MMatrix.set((Matrix4d)s.peek().getKey());
+//		MinvTMatrix.set((Matrix4d)s.peek().getValue());
+//		MinvTMatrix.invert(MMatrix);
+//		MinvTMatrix.transpose();
 		glUniformMatrix( gl, MMatrixID, MMatrix );
 		glUniformMatrix( gl, MinvTMatrixID, MinvTMatrix);
 	}
@@ -114,10 +117,11 @@ public class BasicPipeline {
 	 */
 	public void push() {
 		// TODO: Objective 1: stack push
-		Matrix4d temp = new Matrix4d();
-		temp.set(MMatrix);
-		s.push(temp);
-		throw new RuntimeErrorException( new Error("stack overflow") );
+//		Matrix4d temp = new Matrix4d();
+//		temp.set(MMatrix);
+		Pair tempPair = new Pair(MMatrix.clone(),MinvTMatrix.clone());
+		s.push(tempPair);
+
 	}
 
 	/** 
@@ -127,12 +131,14 @@ public class BasicPipeline {
 	 */
 	public void pop() {
 		// TODO: Objective 1: stack pop
-		MMatrix.set((Matrix4d)s.peek());
-		if(!s.empty()) {
-			s.pop();
-		}
+
+
+		MMatrix.set(s.peek().getKey());
+		MinvTMatrix.set((Matrix4d)s.peek().getValue());		
+		s.pop();
 		
-		throw new RuntimeErrorException( new Error("stack underflow") );
+
+
 	}
 	
 	private Matrix4d tmpMatrix4d = new Matrix4d();
@@ -146,20 +152,27 @@ public class BasicPipeline {
 	 */
 	public void translate( double x, double y, double z ) {
 		// TODO: Objective 2: translate
+//		 Matrix4d translation = new Matrix4d();
+//		 translation.setIdentity();
+//		 translation.setTranslation(new Vector3d(x, y, z));
+//		 MMatrix.mul(translation);
+//		 translation.setTranslation(new Vector3d(-x, -y, -z));
+//		 MinvTMatrix.mul(translation);
 		tmpMatrix4d.set( new double[] {
-        		1,  0,  0,  0,
-        		0,  1,  0,  0,
-        		0,  0,  1,  0,
-        		x,  y,  z,  1,
+        		1,  0,  0,  x,
+        		0,  1,  0,  y,
+        		0,  0,  1,  z,
+        		0,  0,  0,  1,
         } );
-		MMatrix.mul(tmpMatrix4d);
+		MMatrix.mul(MMatrix, tmpMatrix4d);
 		tmpMatrix4d.set( new double[] {
-        		1,  0,  0,  0,
-        		0,  1,  0,  0,
-        		0,  0,  1,  0,
-        		-x,  -y,  -z,  1,
+        		1,  0,  0,  -x,
+        		0,  1,  0,  -y,
+        		0,  0,  1,  -z,
+        		0,  0,  0,  1,
         } );
-		MinvTMatrix.mul(tmpMatrix4d);
+		MinvTMatrix.mul(MinvTMatrix, tmpMatrix4d);
+
 	}
 
 	/**
@@ -177,14 +190,14 @@ public class BasicPipeline {
         		0,  0,  z,  0,
         		0,  0,  0,  1,
         } );
-		MMatrix.mul(tmpMatrix4d);
+		MMatrix.mul(MMatrix, tmpMatrix4d);
 		tmpMatrix4d.set( new double[] {
         		1/x,  0,  0,  0,
         		0,  1/y,  0,  0,
         		0,  0,  1/z,  0,
         		0,  0,  0,  1,
         } );
-		MinvTMatrix.mul(tmpMatrix4d);
+		MinvTMatrix.mul(MinvTMatrix, tmpMatrix4d);
 
 	}
 	

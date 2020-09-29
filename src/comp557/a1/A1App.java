@@ -45,7 +45,7 @@ public class A1App implements GLEventListener {
     
     public A1App() {
         String windowName = "Assignment 1 - " + CharacterMaker.name;
-        GLProfile glp = GLProfile.getDefault();
+        GLProfile glp = GLProfile.get( GLProfile.GL4 );
         GLCapabilities glcap = new GLCapabilities(glp);
         GLCanvas glCanvas = new GLCanvas( glcap );
         final FPSAnimator animator; 
