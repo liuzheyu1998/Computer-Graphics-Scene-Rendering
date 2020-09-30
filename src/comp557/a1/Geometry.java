@@ -49,10 +49,11 @@ public class Geometry extends GraphNode{
 		pipeline.scale(sca.x,sca.y,sca.z);
 
 		GL4 gl = drawable.getGL().getGL4();
+		
 		pipeline.setModelingMatrixUniform(gl);
-		if (type.equals("Cube")) {
+		if (type.equals("box")) {
 			Cube.draw(drawable, pipeline);
-		}else if(type.equals("Sphere")) {
+		}else if(type.equals("sphere")) {
 			Sphere.draw(drawable, pipeline);
 		}
 

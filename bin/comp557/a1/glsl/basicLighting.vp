@@ -9,9 +9,11 @@ in vec4 position;
 in vec3 normal;
 
 out vec3 normalForFP;
+out vec3 pos;
 
 void main() {
     vec4 tmp = V * MinvT * vec4( normal, 0 );
     normalForFP = normalize( tmp.xyz );
     gl_Position = P * V * M * position; 
+    pos = position.xyz;
 }
