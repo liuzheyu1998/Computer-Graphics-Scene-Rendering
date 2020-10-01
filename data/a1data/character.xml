@@ -3,22 +3,25 @@
 <doc>
     <node type="free" name="root">
     	<geom type="box" name="torso" center="0 0.5 0" scale="1 1 0.7"  />
+
     	<node type="spherical" name="r shoulder" position="-0.5 1 0">
-        	<geom type="box" name="upper r arm" center="-0.1 -0.5 0" scale="0.2 0.7 0.2" />
-        	<node type="spherical" name="r elbow" position="0 -0.7 0">
-        		<geom type="box" name="lower r arm" center="-0.1 -0.5 0" scale="0.2 0.7 0.2" />
+        	<geom type="box" name="upper r arm" center="-0.1 -0.45 0" scale="0.2 0.9 0.2" />
+        	<node type="spherical" name="r elbow" position="-0.1 -0.9 0">
+        		<geom type="box" name="lower r arm" center="0 -0.45 0" scale="0.2 0.9 0.2" />
     		</node>
     	</node>
     	<node type="spherical" name="l shoulder" position="0.5 1 0">
-        	<geom type="box" name="upper l arm" center="0.1 -0.5 0" scale="0.2 0.7 0.2" />
-        	<node type="spherical" name="l elbow" position="0 -0.7 0">
-        		<geom type="box" name="lower l arm" center="0.1 -0.5 0" scale="0.2 0.7 0.2" />
+        	<geom type="box" name="upper l arm" center="0.1 -0.45 0" scale="0.2 0.9 0.2" />
+        	<node type="spherical" name="l elbow" position="0.1 -0.9 0">
+        		<geom type="box" name="lower l arm" center="0 -0.45 0" scale="0.2 0.9 0.2" />
     		</node>
     	</node>
     	<node type="spherical" name="neckjoint" position="0 1 0">
         	<geom type="box" name="neck" center="0 0 0" scale="0.4 0.4 0.4" />
         	<node type="spherical" name="headjoint" position="0 0.4 0">
-        		<geom type="box" name="head" center="0 0 0" scale="0.7 0.7 0.7" />
+        		<geom type="box" name="head" center="0 0 0" scale="0.5 0.5 0.5" />
+        		<geom type="sphere" name="white eye ball" center="-0.1 0.15 0.2" scale="0.1 0.1 0.1" />
+        		<geom type="sphere" name="white eye ball" center="0.1 0.15 0.2" scale="0.1 0.1 0.1" />
     		</node>
     	</node>
     	
@@ -34,6 +37,7 @@
         		<geom type="box" name="upper r leg" center="0 0 0" scale="0.3 0.8 0.3" />
         		<node type="spherical" name="r knee" position="0 -0.4 0">
         			<geom type="box" name="lower r leg" center="0 -0.4  0" scale="0.3 0.8 0.3" />
+
     			</node>
     		</node>
     	</node>

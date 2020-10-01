@@ -39,8 +39,10 @@ public class BasicPipeline {
     /** TODO: Objective 8: lighting direction, minimally one direction is setup , but add more as necessary */
     public int lightDirID;
     public int lightColID;
-    public int halfVecID;
+    public int HalfVecID;
+    public int ViewDirID;
     public int colorID;
+    public int AmbientID;
     
     public int positionAttributeID;
     public int normalAttributeID;
@@ -82,8 +84,11 @@ public class BasicPipeline {
         lightColID = gl.glGetUniformLocation( glslProgramID, "lightCol" );
         positionAttributeID = gl.glGetAttribLocation( glslProgramID, "position" );
         normalAttributeID = gl.glGetAttribLocation( glslProgramID, "normal" );
-        halfVecID = gl.glGetAttribLocation( glslProgramID, "halfvec" );
+        HalfVecID = gl.glGetAttribLocation( glslProgramID, "halfvec" );
         colorID = gl.glGetAttribLocation( glslProgramID, "color" );
+        AmbientID = gl.glGetAttribLocation( glslProgramID, "amb" );
+        ViewDirID= gl.glGetAttribLocation( glslProgramID, "viewDir" );
+
 	}
 	
 	/**
@@ -102,19 +107,18 @@ public class BasicPipeline {
         glUniformMatrix( gl, MinvTMatrixID, MinvTMatrix );
 
         // TODO: Objective 7: GLSL lighting, you may want to provide 
-        Vector3f lightDir = new Vector3f( -1, -1, -1 );
+        Vector3f lightDir = new Vector3f( 0, 0.5f, 1 );
         Vector3f lightCol = new Vector3f( 1, 1, 1 );
-//        Vector3f View = new Vector3f( 3, 0, 0 );
-//        Vector3f Half = lightDir + View;
-        Vector3f half = new Vector3f( 0, 1, 1 );
-        Vector4f color = new Vector4f( 0.5f, 0.5f, 0.5f, 1.0f );
-        lightDir.normalize();
-        half.normalize();
+        Vector3f View = new Vector3f( 0, 0, -2.5f );
+        Vector3f amb = new Vector3f( 1, 1, 1 );
+        
+        View.normalize();
 
-//        gl.glUniform3f( lightDirID, lightDir.x, lightDir.y, lightDir.z );
+        gl.glUniform3f( lightDirID, lightDir.x, lightDir.y, lightDir.z );
         gl.glUniform3f( lightColID, lightCol.x, lightCol.y, lightCol.z );
-//        gl.glUniform3f( halfVecID, half.x, half.y, half.z );
-        gl.glUniform4f( colorID, 1f, 1f, 1f, 1.0f);
+        gl.glUniform3f( ViewDirID, View.x, View.y, View.z);
+        gl.glUniform3f( AmbientID, 1, 1, 1 );
+        
 	}
 	
 	/** Sets the modeling matrix with the current top of the stack */
