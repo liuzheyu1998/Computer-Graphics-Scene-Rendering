@@ -6,11 +6,12 @@ import comp557.a1.geom.*;
 
 import javax.vecmath.Tuple3d;
 import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
 public class Geometry extends GraphNode{
 	Tuple3d trans;
 	Tuple3d sca;
-	Tuple3d color;
+	Vector3f color =  new Vector3f(0, 0, 0);
 	String type;
 	public Geometry( String name, Tuple3d translation, Tuple3d scaling, String type) {
 		super(name);
@@ -36,8 +37,8 @@ public class Geometry extends GraphNode{
 		
 	}
 	
-	public void setColor(Tuple3d color) {
-		this.color = color;
+	public void setColor(Tuple3d  color) {
+		this.color = new Vector3f((float)color.x, (float)color.y, (float)color.z);
 		
 	}
 	
@@ -51,6 +52,8 @@ public class Geometry extends GraphNode{
 		GL4 gl = drawable.getGL().getGL4();
 		
 		pipeline.setModelingMatrixUniform(gl);
+//		pipeline.setColorUniform(gl,this.color);
+        gl.glUniform3f( pipeline.kdID, this.color.x, this.color.y, this.color.z);
 		if (type.equals("box")) {
 			Cube.draw(drawable, pipeline);
 		}else if(type.equals("sphere")) {

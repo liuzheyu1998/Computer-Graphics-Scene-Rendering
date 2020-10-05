@@ -23,7 +23,7 @@ public class RotaryJoint extends GraphNode  {
 	}
 	public RotaryJoint(String name) {
 		super(name);
-		dofs.add(r = new DoubleParameter(name + "rotation",0, -180, 180));
+		dofs.add(r = new DoubleParameter(name + "rotation",0, -150, 150));
 
 	}
 	

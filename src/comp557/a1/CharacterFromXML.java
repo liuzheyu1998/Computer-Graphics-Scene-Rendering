@@ -92,8 +92,9 @@ public class CharacterFromXML {
 			// likely to cause an execption (perhaps OK)
 			
 			RotaryJoint joint = new RotaryJoint( name );
-			joint.setPosition( getTuple3dAttr(dataNode,"position") );
-			joint.setAxis( getTuple3dAttr(dataNode,"axis") );
+//			joint.setPosition( getTuple3dAttr(dataNode,"position") );
+			if ( (t=getTuple3dAttr(dataNode,"axis")) != null ) joint.setAxis( t );
+			if ( (t=getTuple3dAttr(dataNode,"position")) != null ) joint.setPosition( t );	
 			return joint;
 			
 		} else {

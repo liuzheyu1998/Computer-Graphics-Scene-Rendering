@@ -35,14 +35,21 @@ public class BasicPipeline {
     /** TODO: Objective 7: material properties, minimally kd is set up, but add more as necessary */
     /** You will want to use this with a glUniform3f call to set the r g b reflectance properties, each being between 0 and 1 */
     public int kdID;
+    public int ksID;
     
     /** TODO: Objective 8: lighting direction, minimally one direction is setup , but add more as necessary */
-    public int lightDirID;
-    public int lightColID;
+    public int lightDirID1;
+    public int lightColID1;
+    public int AmbientID;
+    public int lightDirID2;
+    public int lightColID2;
+    public int lightDirID3;
+    public int lightColID3;
+    public int tColID;
     public int HalfVecID;
     public int ViewDirID;
     public int colorID;
-    public int AmbientID;
+    public int ObjectColorID;
     
     public int positionAttributeID;
     public int normalAttributeID;
@@ -80,14 +87,20 @@ public class BasicPipeline {
         VMatrixID = gl.glGetUniformLocation( glslProgramID, "V" );
         PMatrixID = gl.glGetUniformLocation( glslProgramID, "P" );
         kdID = gl.glGetUniformLocation( glslProgramID, "kd" );
-        lightDirID = gl.glGetUniformLocation( glslProgramID, "lightDir" );
-        lightColID = gl.glGetUniformLocation( glslProgramID, "lightCol" );
+        ksID = gl.glGetUniformLocation( glslProgramID, "ks" );
+        lightDirID1 = gl.glGetUniformLocation( glslProgramID, "lightDir1" );
+        lightColID1 = gl.glGetUniformLocation( glslProgramID, "lightCol1" );
+        lightDirID2 = gl.glGetUniformLocation( glslProgramID, "lightDir2" );
+        lightColID2 = gl.glGetUniformLocation( glslProgramID, "lightCol2" );
+        lightDirID3 = gl.glGetUniformLocation( glslProgramID, "lightDir3" );
+        lightColID3 = gl.glGetUniformLocation( glslProgramID, "lightCol3" );
+        ObjectColorID = gl.glGetUniformLocation( glslProgramID, "objectCol" );
         positionAttributeID = gl.glGetAttribLocation( glslProgramID, "position" );
         normalAttributeID = gl.glGetAttribLocation( glslProgramID, "normal" );
         HalfVecID = gl.glGetAttribLocation( glslProgramID, "halfvec" );
         colorID = gl.glGetAttribLocation( glslProgramID, "color" );
-        AmbientID = gl.glGetAttribLocation( glslProgramID, "amb" );
         ViewDirID= gl.glGetAttribLocation( glslProgramID, "viewDir" );
+        AmbientID= gl.glGetAttribLocation( glslProgramID, "ambient" );
 
 	}
 	
@@ -107,17 +120,32 @@ public class BasicPipeline {
         glUniformMatrix( gl, MinvTMatrixID, MinvTMatrix );
 
         // TODO: Objective 7: GLSL lighting, you may want to provide 
-        Vector3f lightDir = new Vector3f( 0, 0.5f, 1 );
-        Vector3f lightCol = new Vector3f( 1, 1, 1 );
+        Vector3f lightDir = new Vector3f( 0, 0, 5f );
+        Vector3f lightCol = new Vector3f( 0.7f, 0.7f, 0.7f );
+        Vector3f lightDir2 = new Vector3f( 0, 2, 0 );
+        Vector3f lightCol2 = new Vector3f( 0.3f, 0.3f, 0.3f );
+        Vector3f lightDir3 = new Vector3f( -2, 0.5f, 1 );
+        Vector3f lightCol3 = new Vector3f( 0.7f, 0.7f, 0.7f );
+        Vector3f t = new Vector3f( 0.1f, 0.1f, 0.1f );
         Vector3f View = new Vector3f( 0, 0, -2.5f );
-        Vector3f amb = new Vector3f( 1, 1, 1 );
+//        Vector3f Kd = new Vector3f( 0, 0, 1 );
+        Vector3f Ks = new Vector3f( 0.7f, 0.7f, 0.7f );
         
-        View.normalize();
 
-        gl.glUniform3f( lightDirID, lightDir.x, lightDir.y, lightDir.z );
-        gl.glUniform3f( lightColID, lightCol.x, lightCol.y, lightCol.z );
+        
+//        View.normalize();
+
+        gl.glUniform3f( lightDirID1, lightDir.x, lightDir.y, lightDir.z );
+        gl.glUniform3f( lightColID1, lightCol.x, lightCol.y, lightCol.z );
+        gl.glUniform3f( lightDirID2, lightDir2.x, lightDir2.y, lightDir2.z );
+        gl.glUniform3f( lightColID2, lightCol2.x, lightCol2.y, lightCol2.z );
+        gl.glUniform3f( lightDirID3, lightDir3.x, lightDir3.y, lightDir3.z );
+        gl.glUniform3f( lightColID3, lightCol3.x, lightCol3.y, lightCol3.z );
+        gl.glUniform3f( AmbientID, t.x, t.y, t.z );
+        gl.glUniform3f( colorID, lightCol.x, lightCol.y, lightCol.z );
         gl.glUniform3f( ViewDirID, View.x, View.y, View.z);
-        gl.glUniform3f( AmbientID, 1, 1, 1 );
+//        gl.glUniform3f( kdID, Kd.x,Kd.y,Kd.z);
+        gl.glUniform3f( ksID, Ks.x,Ks.y,Ks.z);
         
 	}
 	
@@ -132,6 +160,10 @@ public class BasicPipeline {
 		glUniformMatrix( gl, MinvTMatrixID, MinvTMatrix);
 	}
 	
+	/** Sets the modeling matrix with the current top of the stack */
+	public void setColorUniform( GL4 gl, Vector3f color) {
+		gl.glUniform3f( ObjectColorID, color.x, color.y, color.z );
+	}
 	/** 
 	 * Pushes the modeling matrix and its inverse transpose onto the stack so 
 	 * that the state can be restored later
@@ -173,12 +205,6 @@ public class BasicPipeline {
 	 */
 	public void translate( double x, double y, double z ) {
 		// TODO: Objective 2: translate
-//		 Matrix4d translation = new Matrix4d();
-//		 translation.setIdentity();
-//		 translation.setTranslation(new Vector3d(x, y, z));
-//		 MMatrix.mul(translation);
-//		 translation.setTranslation(new Vector3d(-x, -y, -z));
-//		 MinvTMatrix.mul(translation);
 		tmpMatrix4d.set( new double[] {
         		1,  0,  0,  x,
         		0,  1,  0,  y,
@@ -193,6 +219,7 @@ public class BasicPipeline {
         		0,  0,  0,  1,
         } );
 		MinvTMatrix.mul(MinvTMatrix, tmpMatrix4d);
+
 
 	}
 
